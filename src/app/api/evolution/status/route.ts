@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import prisma from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || "http://evolution:8080";
@@ -8,7 +7,7 @@ const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY;
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
