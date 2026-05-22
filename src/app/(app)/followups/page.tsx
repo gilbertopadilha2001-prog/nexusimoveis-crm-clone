@@ -1,6 +1,9 @@
+"use client";
+
 import { Plus } from "lucide-react";
 
-const btnPrimary = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
+const btnPrimary =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
 
 const stats = [
   { label: "Total Pendentes", value: "0", color: undefined },
@@ -19,7 +22,13 @@ export default function FollowupsPage() {
             Acompanhamentos agendados automaticamente
           </p>
         </div>
-        <button className={btnPrimary}>
+        <button
+          className={btnPrimary}
+          onClick={() => {
+            // TODO: open new-followup modal
+            // POST /rest/v1/follow_ups { contact_id, mensagem, agendado_em, recorrente, intervalo_dias }
+          }}
+        >
           <Plus className="h-4 w-4" />
           Novo Follow-up
         </button>

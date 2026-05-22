@@ -1,10 +1,26 @@
+"use client";
+
+import { useState } from "react";
 import { Gavel, RefreshCw, Search } from "lucide-react";
 
-const btnPrimary = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
+const btnPrimary =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
 
 const states = ["PR", "SP", "RJ", "MG", "RS", "SC", "BA", "GO", "DF", "PE"];
 
 export default function AuctionsPage() {
+  const [estado, setEstado] = useState("PR");
+  const [cidade, setCidade] = useState("");
+  const [search, setSearch] = useState("");
+  const [score, setScore] = useState("Todos");
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    // TODO: POST /functions/v1/sync-auctions { estado, cidade }
+    setTimeout(() => setSyncing(false), 2000);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -27,7 +43,11 @@ export default function AuctionsPage() {
         <div className="p-6 flex flex-wrap items-end gap-3">
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Estado (UF)</label>
-            <select className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-ring">
+            <select
+              className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-24 focus:outline-none focus:ring-2 focus:ring-ring"
+              value={estado}
+              onChange={(e) => setEstado(e.target.value)}
+            >
               {states.map((s) => (
                 <option key={s}>{s}</option>
               ))}
@@ -40,11 +60,13 @@ export default function AuctionsPage() {
             <input
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Ex.: Curitiba"
+              value={cidade}
+              onChange={(e) => setCidade(e.target.value)}
             />
           </div>
-          <button className={btnPrimary}>
-            <RefreshCw className="h-4 w-4" />
-            Sincronizar Caixa
+          <button className={btnPrimary} onClick={handleSync} disabled={syncing}>
+            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Sincronizando..." : "Sincronizar Caixa"}
           </button>
         </div>
       </div>
@@ -59,12 +81,18 @@ export default function AuctionsPage() {
               <input
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pl-9 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 placeholder="Filtrar..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
             </div>
           </div>
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Score mínimo</label>
-            <select className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-ring">
+            <select
+              className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm w-32 focus:outline-none focus:ring-2 focus:ring-ring"
+              value={score}
+              onChange={(e) => setScore(e.target.value)}
+            >
               <option>Todos</option>
               <option>≥ 70</option>
               <option>≥ 80</option>

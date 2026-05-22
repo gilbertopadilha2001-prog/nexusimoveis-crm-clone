@@ -1,6 +1,9 @@
+"use client";
+
 import { Plus, UserRound } from "lucide-react";
 
-const btnPrimary = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
+const btnPrimary =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
 
 export default function AgentsPage() {
   return (
@@ -10,7 +13,13 @@ export default function AgentsPage() {
           <h1 className="text-2xl font-display font-bold text-foreground">Corretores</h1>
           <p className="text-muted-foreground text-sm">Gerencie sua equipe de corretores</p>
         </div>
-        <button className={btnPrimary}>
+        <button
+          className={btnPrimary}
+          onClick={() => {
+            // TODO: open new-agent modal
+            // POST /rest/v1/agents { nome, telefone, email, creci, ativo: true }
+          }}
+        >
           <Plus className="h-4 w-4" />
           Novo Corretor
         </button>
@@ -20,6 +29,7 @@ export default function AgentsPage() {
         <div className="p-6 py-12 text-center text-muted-foreground">
           <UserRound className="h-12 w-12 mx-auto mb-4 opacity-40" />
           <p>Nenhum corretor cadastrado</p>
+          <p className="text-xs mt-1">Adicione corretores para gerenciar a equipe</p>
         </div>
       </div>
     </div>

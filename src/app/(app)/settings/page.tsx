@@ -1,8 +1,28 @@
-import { Webhook, Users, RefreshCw } from "lucide-react";
+"use client";
 
-const btnOutline = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 transition-colors";
+import { useState } from "react";
+import { Webhook, Users, RefreshCw, Save, CheckCircle, XCircle } from "lucide-react";
+
+const btnOutline =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 transition-colors";
+const btnPrimary =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
 
 export default function SettingsPage() {
+  const [apiUrl, setApiUrl] = useState("");
+  const [apiToken, setApiToken] = useState("");
+  const [testStatus, setTestStatus] = useState<"idle" | "testing" | "ok" | "error">("idle");
+
+  const handleTestConnection = async () => {
+    setTestStatus("testing");
+    // TODO: POST /functions/v1/test-uazapi-connection { api_url, token }
+    setTimeout(() => setTestStatus("ok"), 1500);
+  };
+
+  const handleSave = () => {
+    // TODO: PATCH /rest/v1/settings?id=eq.1 { uazapi_url, uazapi_token }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in max-w-3xl">
       <div>
@@ -25,13 +45,32 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
             <div>
               <p className="text-sm font-medium">Status da Conexão</p>
-              <p className="text-xs text-muted-foreground">Conectado via Uazapi</p>
+              <p className="text-xs text-muted-foreground">
+                {testStatus === "ok"
+                  ? "Conectado via Uazapi"
+                  : testStatus === "error"
+                  ? "Falha na conexão"
+                  : "Não testado"}
+              </p>
             </div>
             <span
-              className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
-              style={{ backgroundColor: "hsl(142, 72%, 40%)" }}
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+              style={{
+                backgroundColor:
+                  testStatus === "ok"
+                    ? "hsl(142, 72%, 40%)"
+                    : testStatus === "error"
+                    ? "hsl(0, 72%, 51%)"
+                    : "hsl(220, 10%, 46%)",
+              }}
             >
-              Configurado
+              {testStatus === "ok" && <CheckCircle className="h-3 w-3" />}
+              {testStatus === "error" && <XCircle className="h-3 w-3" />}
+              {testStatus === "ok"
+                ? "Configurado"
+                : testStatus === "error"
+                ? "Erro"
+                : "Pendente"}
             </span>
           </div>
 
@@ -40,7 +79,8 @@ export default function SettingsPage() {
             <input
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="https://api.uazapi.com/v1"
-              defaultValue="demo@nexusimoveis.com.br"
+              value={apiUrl}
+              onChange={(e) => setApiUrl(e.target.value)}
             />
           </div>
 
@@ -50,18 +90,36 @@ export default function SettingsPage() {
               type="password"
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="••••••••••••"
-              defaultValue="NexusDemo2026!"
+              value={apiToken}
+              onChange={(e) => setApiToken(e.target.value)}
             />
           </div>
 
           <div className="p-3 rounded-lg bg-accent/50 border border-border">
             <p className="text-xs font-medium mb-1">URL do Webhook (configure na Uazapi):</p>
-            <code className="text-xs text-primary break-all">
+            <code className="text-xs text-primary break-all select-all">
               https://kmbecvzxxpppmmyhokah.supabase.co/functions/v1/uazapi-webhook
             </code>
           </div>
 
-          <button className={btnOutline}>Testar Conexão</button>
+          <div className="flex gap-3">
+            <button
+              className={btnOutline}
+              onClick={handleTestConnection}
+              disabled={testStatus === "testing"}
+            >
+              {testStatus === "testing" ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Webhook className="h-4 w-4" />
+              )}
+              {testStatus === "testing" ? "Testando..." : "Testar Conexão"}
+            </button>
+            <button className={btnPrimary} onClick={handleSave}>
+              <Save className="h-4 w-4" />
+              Salvar
+            </button>
+          </div>
         </div>
       </div>
 
@@ -77,7 +135,12 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground">
             Selecione os grupos do WhatsApp que receberão o resumo ao encerrar um atendimento.
           </p>
-          <button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full transition-colors">
+          <button
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full transition-colors"
+            onClick={() => {
+              // TODO: POST /functions/v1/sync-whatsapp-groups
+            }}
+          >
             <RefreshCw className="h-4 w-4" />
             Sincronizar Grupos
           </button>

@@ -1,9 +1,25 @@
+"use client";
+
+import { useState } from "react";
 import { RefreshCw, Globe, House } from "lucide-react";
 
-const btnOutline = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2 transition-colors";
-const btnPrimary = "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2 transition-colors";
+const btnOutline =
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-2 transition-colors";
+const btnPrimary =
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2 transition-colors";
 
 export default function ProductsPage() {
+  const [negocio, setNegocio] = useState("Todos");
+  const [tipo, setTipo] = useState("Todos");
+  const [search, setSearch] = useState("");
+  const [syncing, setSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setSyncing(true);
+    // TODO: POST /functions/v1/sync-catalog
+    setTimeout(() => setSyncing(false), 2000);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -14,9 +30,9 @@ export default function ProductsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button className={btnOutline}>
-            <RefreshCw className="h-4 w-4" />
-            Sincronizar Catálogo
+          <button className={btnOutline} onClick={handleSync} disabled={syncing}>
+            <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
+            {syncing ? "Sincronizando..." : "Sincronizar Catálogo"}
           </button>
           <a
             href="https://nexusinovacoesimobiliarias.com.br/"
@@ -34,7 +50,11 @@ export default function ProductsPage() {
       <div className="flex gap-3 flex-wrap items-end">
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Negócio</label>
-          <select className="flex h-9 items-center rounded-md border border-input bg-background px-3 py-2 text-sm w-[130px] focus:outline-none focus:ring-2 focus:ring-ring">
+          <select
+            className="flex h-9 items-center rounded-md border border-input bg-background px-3 py-2 text-sm w-[130px] focus:outline-none focus:ring-2 focus:ring-ring"
+            value={negocio}
+            onChange={(e) => setNegocio(e.target.value)}
+          >
             <option>Todos</option>
             <option>Venda</option>
             <option>Locação</option>
@@ -42,7 +62,11 @@ export default function ProductsPage() {
         </div>
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Tipo</label>
-          <select className="flex h-9 items-center rounded-md border border-input bg-background px-3 py-2 text-sm w-[150px] focus:outline-none focus:ring-2 focus:ring-ring">
+          <select
+            className="flex h-9 items-center rounded-md border border-input bg-background px-3 py-2 text-sm w-[150px] focus:outline-none focus:ring-2 focus:ring-ring"
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}
+          >
             <option>Todos</option>
             <option>Casa</option>
             <option>Apartamento</option>
@@ -55,6 +79,8 @@ export default function ProductsPage() {
           <input
             className="flex h-9 rounded-md border border-input bg-background px-3 py-2 text-sm w-[200px] placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Cidade, bairro..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
@@ -63,7 +89,11 @@ export default function ProductsPage() {
       <div className="rounded-lg border bg-card shadow-sm">
         <div className="p-12 text-center text-muted-foreground">
           <House className="h-12 w-12 mx-auto mb-4 opacity-30" />
-          <p>Nenhum imóvel encontrado</p>
+          <p>
+            {search || negocio !== "Todos" || tipo !== "Todos"
+              ? "Nenhum imóvel encontrado com esses filtros"
+              : "Nenhum imóvel encontrado"}
+          </p>
           <p className="text-sm mt-1">Sincronize o catálogo para importar imóveis</p>
         </div>
       </div>

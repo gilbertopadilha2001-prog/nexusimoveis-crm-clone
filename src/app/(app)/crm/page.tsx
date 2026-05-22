@@ -1,14 +1,17 @@
+"use client";
+
 import { UserCheck } from "lucide-react";
 
-const btnPrimary = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 transition-colors";
+const btnPrimary =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3 transition-colors";
 
 const columns = [
-  { name: "Novo Lead", color: "rgb(59, 130, 246)" },
-  { name: "Qualificando", color: "rgb(245, 158, 11)" },
-  { name: "Proposta Enviada", color: "rgb(168, 85, 247)" },
-  { name: "Negociando", color: "rgb(249, 115, 22)" },
-  { name: "Fechado", color: "rgb(34, 197, 94)" },
-  { name: "Perdido", color: "rgb(239, 68, 68)" },
+  { name: "Novo Lead", color: "rgb(59, 130, 246)", stage: "novo_lead" },
+  { name: "Qualificando", color: "rgb(245, 158, 11)", stage: "qualificando" },
+  { name: "Proposta Enviada", color: "rgb(168, 85, 247)", stage: "proposta_enviada" },
+  { name: "Negociando", color: "rgb(249, 115, 22)", stage: "negociando" },
+  { name: "Fechado", color: "rgb(34, 197, 94)", stage: "fechado" },
+  { name: "Perdido", color: "rgb(239, 68, 68)", stage: "perdido" },
 ];
 
 export default function CrmPage() {
@@ -21,15 +24,20 @@ export default function CrmPage() {
             Gerencie seus leads pelo funil de vendas de imóveis
           </p>
         </div>
-        <button className={btnPrimary}>
+        <button
+          className={btnPrimary}
+          onClick={() => {
+            // TODO: POST /functions/v1/distribute-leads
+          }}
+        >
           <UserCheck className="h-4 w-4" />
           Distribuir Leads
         </button>
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4">
-        {columns.map(({ name, color }) => (
-          <div key={name} className="flex-shrink-0 w-72">
+        {columns.map(({ name, color, stage }) => (
+          <div key={stage} className="flex-shrink-0 w-72">
             {/* Column header */}
             <div className="flex items-center gap-2 mb-3 px-1">
               <div
@@ -42,10 +50,21 @@ export default function CrmPage() {
               </span>
             </div>
 
-            {/* Column body */}
-            <div className="h-[calc(100vh-220px)] overflow-y-auto">
-              <div className="space-y-2 pr-2">
-                <div className="rounded-lg border-2 border-dashed border-border p-6 text-center">
+            {/* Column body — drop target */}
+            <div
+              className="h-[calc(100vh-220px)] overflow-y-auto rounded-lg border-2 border-dashed border-border transition-colors hover:border-primary/30"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const leadId = e.dataTransfer.getData("lead_id");
+                if (leadId) {
+                  // TODO: PATCH /rest/v1/crm_leads?id=eq.{leadId} { stage }
+                  console.log("Move lead", leadId, "to", stage);
+                }
+              }}
+            >
+              <div className="space-y-2 p-2">
+                <div className="p-6 text-center">
                   <p className="text-xs text-muted-foreground">Nenhum lead</p>
                 </div>
               </div>
