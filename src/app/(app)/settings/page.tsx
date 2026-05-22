@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Webhook, Users, RefreshCw, Save, CheckCircle, XCircle } from "lucide-react";
+import { Webhook, Users, RefreshCw, Save, CheckCircle, XCircle, Zap } from "lucide-react";
 
 const btnOutline =
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 transition-colors";
@@ -12,6 +12,10 @@ export default function SettingsPage() {
   const [apiUrl, setApiUrl] = useState("");
   const [apiToken, setApiToken] = useState("");
   const [testStatus, setTestStatus] = useState<"idle" | "testing" | "ok" | "error">("idle");
+
+  const [n8nUrl, setN8nUrl] = useState("");
+  const [n8nApiKey, setN8nApiKey] = useState("");
+  const [n8nStatus, setN8nStatus] = useState<"idle" | "testing" | "ok" | "error">("idle");
 
   const handleTestConnection = async () => {
     setTestStatus("testing");
@@ -116,6 +120,101 @@ export default function SettingsPage() {
               {testStatus === "testing" ? "Testando..." : "Testar Conexão"}
             </button>
             <button className={btnPrimary} onClick={handleSave}>
+              <Save className="h-4 w-4" />
+              Salvar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* n8n Webhooks */}
+      <div className="rounded-lg border bg-card shadow-sm shadow-card">
+        <div className="p-6 border-b">
+          <h3 className="font-display font-semibold text-lg flex items-center gap-2">
+            <Zap className="h-5 w-5 text-primary" />
+            Automações n8n
+          </h3>
+        </div>
+        <div className="p-6 space-y-4">
+          {/* Status row */}
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <div>
+              <p className="text-sm font-medium">Status do n8n</p>
+              <p className="text-xs text-muted-foreground">
+                {n8nStatus === "ok"
+                  ? "Conectado ao n8n"
+                  : n8nStatus === "error"
+                  ? "Falha na conexão"
+                  : "Não configurado"}
+              </p>
+            </div>
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+              style={{
+                backgroundColor:
+                  n8nStatus === "ok"
+                    ? "hsl(142, 72%, 40%)"
+                    : n8nStatus === "error"
+                    ? "hsl(0, 72%, 51%)"
+                    : "hsl(220, 10%, 46%)",
+              }}
+            >
+              {n8nStatus === "ok" && <CheckCircle className="h-3 w-3" />}
+              {n8nStatus === "error" && <XCircle className="h-3 w-3" />}
+              {n8nStatus === "ok"
+                ? "Configurado"
+                : n8nStatus === "error"
+                ? "Erro"
+                : "Pendente"}
+            </span>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-1.5 block">URL do n8n</label>
+            <input
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="https://n8n.nexusinovacoesimobiliarias.com.br"
+              value={n8nUrl}
+              onChange={(e) => setN8nUrl(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-1.5 block">Chave de API do n8n</label>
+            <input
+              type="password"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="••••••••••••"
+              value={n8nApiKey}
+              onChange={(e) => setN8nApiKey(e.target.value)}
+            />
+          </div>
+
+          <div className="p-3 rounded-lg bg-accent/50 border border-border">
+            <p className="text-xs font-medium mb-1">URL do Webhook (configure no n8n):</p>
+            <code className="text-xs text-primary break-all select-all">
+              https://crm.nexusinovacoesimobiliarias.com.br/api/webhooks/n8n
+            </code>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Configure webhooks no painel do n8n para automatizar ações como envio de mensagens, distribuição de leads e follow-ups automáticos.
+          </p>
+
+          <div className="flex gap-3">
+            <button
+              className={btnOutline}
+              onClick={() => setN8nStatus("testing")}
+              disabled={n8nStatus === "testing"}
+            >
+              {n8nStatus === "testing" ? (
+                <RefreshCw className="h-4 w-4 animate-spin" />
+              ) : (
+                <Zap className="h-4 w-4" />
+              )}
+              {n8nStatus === "testing" ? "Testando..." : "Testar Conexão"}
+            </button>
+            <button className={btnPrimary} onClick={() => {}}>
               <Save className="h-4 w-4" />
               Salvar
             </button>

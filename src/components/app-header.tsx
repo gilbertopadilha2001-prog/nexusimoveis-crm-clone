@@ -2,6 +2,7 @@
 
 import { PanelLeft, LogOut, Bell, Search } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 
 interface AppHeaderProps {
   isCollapsed: boolean;
@@ -57,9 +58,12 @@ export function AppHeader({ isCollapsed, onToggle }: AppHeaderProps) {
       </button>
 
       {/* User avatar */}
-      <div className="flex items-center gap-2">
+      <Link
+        href="/profile"
+        className="flex items-center gap-2 hover:opacity-80 transition-opacity rounded-lg px-2 py-1"
+      >
         <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold cursor-pointer"
           style={{
             backgroundColor: "var(--nexus-gold)",
             color: "var(--nexus-dark)",
@@ -75,7 +79,7 @@ export function AppHeader({ isCollapsed, onToggle }: AppHeaderProps) {
             {userRole}
           </span>
         </div>
-      </div>
+      </Link>
 
       {/* Logout */}
       <button
