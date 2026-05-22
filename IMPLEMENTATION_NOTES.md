@@ -95,8 +95,10 @@ DATABASE_URL="postgresql://postgres:PASSWORD@localhost:5432/nexus_crm"
 AUTH_SECRET="nexus-crm-secret-key-change-in-production-2026"
 AUTH_URL="http://localhost:3000"
 EVOLUTION_API_URL="http://evolution:8080"  # Local Docker network
-EVOLUTION_API_KEY="fb162b991c6f4acbef3975f26f1e8669"
+EVOLUTION_API_KEY="your-evolution-api-key-here"  # Set via environment variable
 ```
+
+**IMPORTANT**: Never commit `.env.local` or expose `EVOLUTION_API_KEY`. Use environment variables on VPS.
 
 For VPS deployment, set environment variables in Docker service:
 
