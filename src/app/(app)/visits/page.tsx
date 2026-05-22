@@ -1,0 +1,44 @@
+import { Plus, CalendarCheck } from "lucide-react";
+
+const btnPrimary = "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 transition-colors";
+const btnActive = "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3 transition-colors";
+const btnOutlineFilter = "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3 transition-colors";
+
+const filters = ["Agendada", "Confirmada", "Realizada", "Cancelada", "Reagendada"];
+
+export default function VisitsPage() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-display font-bold text-foreground">
+            Agendamento de Visitas
+          </h1>
+          <p className="text-muted-foreground text-sm">0 visitas no total</p>
+        </div>
+        <button className={btnPrimary}>
+          <Plus className="h-4 w-4" />
+          Nova Visita
+        </button>
+      </div>
+
+      {/* Status filter pills */}
+      <div className="flex gap-2 flex-wrap">
+        <button className={btnActive}>Todas</button>
+        {filters.map((f) => (
+          <button key={f} className={btnOutlineFilter}>
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {/* Empty state */}
+      <div className="rounded-lg border bg-card shadow-sm">
+        <div className="p-12 text-center text-muted-foreground">
+          <CalendarCheck className="h-12 w-12 mx-auto mb-4 opacity-30" />
+          <p>Nenhuma visita agendada</p>
+        </div>
+      </div>
+    </div>
+  );
+}
