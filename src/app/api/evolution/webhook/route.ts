@@ -110,22 +110,57 @@ export async function POST(req: NextRequest) {
       const instanceName = instance ?? data?.instance;
 
       if (instanceName && state) {
-        const user = await prisma.user.findFirst({ where: { whatsappInstanceId: instanceName } });
+        let user = await prisma.user.findFirst({ where: { whatsappInstanceId: instanceName } });
+
         if (user) {
           const newStatus =
             state === "open" ? "connected" : state === "close" ? "disconnected" : "scanning";
 
-          await prisma.user.update({
-            where: { id: user.id },
-            data: {
-              whatsappStatus: newStatus,
-              ...(state !== "open" ? { whatsappPhone: null } : {}),
-            },
-          });
-
-          // Ao conectar, sincroniza conversas existentes da Evolution
           if (state === "open") {
+            // Extrai o número conectado
+            const ownerPhone = data?.ownerJid?.replace("@s.whatsapp.net", "") ||
+              data?.instance?.ownerJid?.replace("@s.whatsapp.net", "") || null;
+
+            // Verifica se outro usuário no CRM já estava vinculado a esse número
+            if (ownerPhone) {
+              const normalizeP = (p: string) => p.replace(/\D/g, "");
+              const normOwner = normalizeP(ownerPhone);
+              const allUsers = await prisma.user.findMany({
+                where: { whatsappPhone: { not: null }, id: { not: user.id } },
+                select: { id: true, whatsappPhone: true, whatsappInstanceId: true },
+              });
+              const duplicate = allUsers.find((u) => {
+                const n = normalizeP(u.whatsappPhone!);
+                return n === normOwner || n.endsWith(normOwner) || normOwner.endsWith(n);
+              });
+
+              if (duplicate) {
+                // Redireciona o usuário atual para a instância já existente do mesmo número
+                await prisma.user.update({
+                  where: { id: user.id },
+                  data: {
+                    whatsappInstanceId: duplicate.whatsappInstanceId,
+                    whatsappPhone: ownerPhone,
+                    whatsappStatus: "connected",
+                  },
+                });
+                return NextResponse.json({ ok: true });
+              }
+            }
+
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                whatsappStatus: "connected",
+                ...(ownerPhone ? { whatsappPhone: ownerPhone } : {}),
+              },
+            });
             syncChatsForAgent(instanceName, user.id).catch(console.error);
+          } else {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { whatsappStatus: state === "close" ? "disconnected" : "scanning", whatsappPhone: null },
+            });
           }
         }
       }
