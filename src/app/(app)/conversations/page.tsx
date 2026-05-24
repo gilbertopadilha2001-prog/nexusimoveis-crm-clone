@@ -26,6 +26,16 @@ interface WAStatus {
   phone: string | null;
   instanceName: string | null;
   userName: string | null;
+  disconnectionCode?: number | null;
+  disconnectionReason?: string | null;
+}
+
+function getDisconnectHelp(code?: number | null, reason?: string | null): string | null {
+  if (!code && !reason) return null;
+  if (code === 403) return "Conta bloqueada pelo WhatsApp por uso de API não-oficial. Aguarde 24-72h ou use outro número.";
+  if (code === 401 && reason === "device_removed") return "Dispositivo removido. Escaneie o QR code novamente.";
+  if (code === 401) return "Sessão encerrada. Escaneie o QR code para reconectar.";
+  return "Conexão encerrada. Escaneie o QR code para reconectar.";
 }
 
 function initials(name: string | null, phone: string) {
@@ -377,8 +387,20 @@ export default function ConversationsPage() {
               <h3 className="font-display font-bold text-lg">Conectar WhatsApp</h3>
               <button onClick={() => { setShowQR(false); setQrCode(null); }} className="p-1 rounded-lg hover:bg-muted"><X className="h-5 w-5" /></button>
             </div>
+            {(() => {
+              const helpMsg = getDisconnectHelp(wa.disconnectionCode, wa.disconnectionReason);
+              return helpMsg ? (
+                <div className="mb-4 rounded-lg px-3 py-2 text-xs text-center"
+                  style={{ backgroundColor: wa.disconnectionCode === 403 ? "rgb(254 226 226)" : "rgb(254 249 195)", color: wa.disconnectionCode === 403 ? "rgb(185 28 28)" : "rgb(133 77 14)" }}>
+                  {helpMsg}
+                </div>
+              ) : null;
+            })()}
             <p className="text-sm text-muted-foreground mb-4 text-center">
-              Abra o WhatsApp → Dispositivos vinculados → Vincular dispositivo
+              Abra o WhatsApp → <strong>Dispositivos vinculados</strong> → Vincular dispositivo
+            </p>
+            <p className="text-xs text-muted-foreground mb-3 text-center bg-muted/40 rounded-lg px-3 py-2">
+              ⚠️ Se aparecer &quot;Não é possível conectar novos dispositivos&quot;, remova um dispositivo antigo no seu celular antes de escanear.
             </p>
             <div className="flex items-center justify-center min-h-[220px]">
               {qrLoading || !qrCode ? (

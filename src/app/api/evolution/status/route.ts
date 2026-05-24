@@ -19,39 +19,58 @@ export async function GET() {
       return NextResponse.json({ status: "disconnected", phone: null, instanceName: null, userName: user.name });
     }
 
-    const res = await fetch(
-      `${EVOLUTION_API_URL}/instance/connectionState/${user.whatsappInstanceId}`,
-      { headers: { "apikey": EVOLUTION_API_KEY } }
+    // Fetch full instance info (includes disconnectionReasonCode)
+    const allRes = await fetch(
+      `${EVOLUTION_API_URL}/instance/fetchInstances`,
+      { headers: { apikey: EVOLUTION_API_KEY } }
     ).catch(() => null);
 
-    if (!res?.ok) {
+    if (!allRes?.ok) {
       return NextResponse.json({ status: user.whatsappStatus, phone: user.whatsappPhone, instanceName: user.whatsappInstanceId, userName: user.name });
     }
 
-    const data = await res.json();
-    const state = data.instance?.state || data.state;
+    const all: Array<{
+      name: string;
+      connectionStatus: string;
+      ownerJid?: string;
+      disconnectionReasonCode?: number;
+      disconnectionObject?: string;
+    }> = await allRes.json().catch(() => []);
+
+    const inst = all.find((i) => i.name === user.whatsappInstanceId);
+
+    if (!inst) {
+      // Instance doesn't exist in Evolution — reset DB status
+      await prisma.user.update({ where: { id: user.id }, data: { whatsappStatus: "disconnected" } });
+      return NextResponse.json({ status: "disconnected", phone: user.whatsappPhone, instanceName: user.whatsappInstanceId, userName: user.name });
+    }
 
     let status = user.whatsappStatus;
     let phone = user.whatsappPhone;
+    let disconnectionCode: number | null = inst.disconnectionReasonCode ?? null;
+    let disconnectionReason: string | null = null;
 
-    if (state === "open") {
+    if (inst.disconnectionObject) {
+      try {
+        const obj = JSON.parse(inst.disconnectionObject);
+        disconnectionReason =
+          obj?.error?.data?.tag ||
+          obj?.error?.data?.reason ||
+          obj?.error?.output?.payload?.message ||
+          null;
+      } catch { /* ignore */ }
+    }
+
+    if (inst.connectionStatus === "open") {
       status = "connected";
-      const infoRes = await fetch(
-        `${EVOLUTION_API_URL}/instance/fetchInstances?instanceName=${user.whatsappInstanceId}`,
-        { headers: { "apikey": EVOLUTION_API_KEY } }
-      ).catch(() => null);
-
-      if (infoRes?.ok) {
-        const info = await infoRes.json();
-        const instance = Array.isArray(info) ? info[0] : info;
-        phone = instance?.instance?.ownerJid?.replace("@s.whatsapp.net", "") || phone;
-      }
-
+      phone = inst.ownerJid?.replace("@s.whatsapp.net", "") || phone;
+      disconnectionCode = null;
+      disconnectionReason = null;
       await prisma.user.update({
         where: { id: user.id },
         data: { whatsappStatus: "connected", whatsappPhone: phone },
       });
-    } else if (state === "close") {
+    } else if (inst.connectionStatus === "close") {
       status = "disconnected";
       await prisma.user.update({
         where: { id: user.id },
@@ -59,7 +78,7 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json({ status, phone, instanceName: user.whatsappInstanceId, userName: user.name });
+    return NextResponse.json({ status, phone, instanceName: user.whatsappInstanceId, userName: user.name, disconnectionCode, disconnectionReason });
   } catch (error) {
     console.error("Error checking WhatsApp status:", error);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });

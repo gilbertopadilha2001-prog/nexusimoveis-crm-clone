@@ -45,6 +45,8 @@ interface WhatsAppStatus {
   phone: string | null;
   instanceName: string | null;
   userName: string | null;
+  disconnectionCode?: number | null;
+  disconnectionReason?: string | null;
 }
 
 export function AppSidebar({ isCollapsed }: AppSidebarProps) {
@@ -156,6 +158,11 @@ export function AppSidebar({ isCollapsed }: AppSidebarProps) {
                 {wa.userName && (
                   <p className="text-[11px] truncate" style={{ color: "hsl(40, 10%, 80%)" }}>
                     {wa.userName}
+                  </p>
+                )}
+                {wa.disconnectionCode === 403 && (
+                  <p className="text-[10px] leading-snug" style={{ color: "rgb(252, 129, 129)" }}>
+                    ⚠️ Conta bloqueada pelo WhatsApp. Aguarde 24-72h.
                   </p>
                 )}
                 {wa.instanceName && (
