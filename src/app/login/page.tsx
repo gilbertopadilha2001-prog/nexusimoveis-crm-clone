@@ -8,7 +8,7 @@ import { Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -20,13 +20,13 @@ export default function LoginPage() {
     setLoading(true);
 
     const result = await signIn("credentials", {
-      email,
+      username,
       password,
       redirect: false,
     });
 
     if (result?.error) {
-      setError("Email ou senha incorretos");
+      setError("Nome ou senha incorretos");
       setLoading(false);
       return;
     }
@@ -132,14 +132,15 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-white/70 mb-1.5">
-                  Email
+                  Nome
                 </label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="seu@email.com"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toUpperCase())}
+                  placeholder="Seu nome de usuário"
                   required
+                  autoComplete="username"
                   className="w-full h-11 px-4 rounded-xl text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[#FFD470]/50 transition-all"
                   style={{
                     backgroundColor: "#0D141A",

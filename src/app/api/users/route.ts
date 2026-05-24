@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, email, password, role, phone, creci } = body;
+  const { name, username, email, password, role, phone, creci } = body;
 
-  if (!name || !email || !password) {
+  if (!name || !username || !email || !password) {
     return NextResponse.json(
-      { error: "Nome, email e senha são obrigatórios" },
+      { error: "Nome, usuário, email e senha são obrigatórios" },
       { status: 400 }
     );
   }
@@ -51,11 +51,20 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const existingUsername = await prisma.user.findUnique({ where: { username: username.toUpperCase() } });
+  if (existingUsername) {
+    return NextResponse.json(
+      { error: "Nome de usuário já cadastrado" },
+      { status: 409 }
+    );
+  }
+
   const hashedPassword = await hash(password, 12);
 
   const user = await prisma.user.create({
     data: {
       name,
+      username: username.toUpperCase(),
       email,
       hashedPassword,
       role: role || "AGENT",

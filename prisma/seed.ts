@@ -17,6 +17,7 @@ async function main() {
     await prisma.user.create({
       data: {
         name: "Gilberto Padilha",
+        username: "GILBERTO",
         email: "admin@nexusimoveis.com.br",
         hashedPassword,
         role: "ADMIN",
@@ -25,16 +26,16 @@ async function main() {
         active: true,
       },
     });
-    console.log("Admin created: admin@nexusimoveis.com.br / nexus2026");
+    console.log("Admin created: GILBERTO / nexus2026");
   } else {
     console.log("Admin already exists, skipping...");
   }
 
   // Create sample agents
   const agents = [
-    { name: "Carlos Mendes", email: "carlos@nexusimoveis.com.br", phone: "(41) 99999-0001", creci: "CRECI F-45231" },
-    { name: "Ana Rodrigues", email: "ana@nexusimoveis.com.br", phone: "(41) 99999-0002", creci: "CRECI F-38921" },
-    { name: "Pedro Lima", email: "pedro@nexusimoveis.com.br", phone: "(41) 99999-0003", creci: "CRECI F-52018" },
+    { name: "Carlos Mendes", username: "CARLOS", email: "carlos@nexusimoveis.com.br", phone: "(41) 99999-0001", creci: "CRECI F-45231" },
+    { name: "Ana Rodrigues", username: "ANA", email: "ana@nexusimoveis.com.br", phone: "(41) 99999-0002", creci: "CRECI F-38921" },
+    { name: "Pedro Lima", username: "PEDRO", email: "pedro@nexusimoveis.com.br", phone: "(41) 99999-0003", creci: "CRECI F-52018" },
   ];
 
   for (const agent of agents) {
