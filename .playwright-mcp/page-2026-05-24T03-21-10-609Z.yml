@@ -1,0 +1,94 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - img "Nexus Imóveis" [ref=e7]
+        - generic [ref=e8]:
+          - generic [ref=e9]: Nexus Imóveis
+          - generic [ref=e10]: Dashboard CRM
+      - navigation [ref=e11]:
+        - generic [ref=e12]:
+          - paragraph [ref=e13]: Menu Principal
+          - list [ref=e14]:
+            - listitem [ref=e15]:
+              - link "Dashboard" [ref=e16] [cursor=pointer]:
+                - /url: /
+                - img [ref=e17]
+                - generic [ref=e22]: Dashboard
+            - listitem [ref=e23]:
+              - link "Conversas" [ref=e24] [cursor=pointer]:
+                - /url: /conversations
+                - img [ref=e25]
+                - generic [ref=e27]: Conversas
+            - listitem [ref=e28]:
+              - link "Contatos" [ref=e29] [cursor=pointer]:
+                - /url: /contacts
+                - img [ref=e30]
+                - generic [ref=e35]: Contatos
+            - listitem [ref=e36]:
+              - link "CRM Kanban" [ref=e37] [cursor=pointer]:
+                - /url: /crm
+                - img [ref=e38]
+                - generic [ref=e39]: CRM Kanban
+            - listitem [ref=e40]:
+              - link "Distribuição" [ref=e41] [cursor=pointer]:
+                - /url: /lead-distribution
+                - img [ref=e42]
+                - generic [ref=e46]: Distribuição
+            - listitem [ref=e47]:
+              - link "Últimos Contatos" [ref=e48] [cursor=pointer]:
+                - /url: /recent-contacts
+                - img [ref=e49]
+                - generic [ref=e52]: Últimos Contatos
+            - listitem [ref=e53]:
+              - link "Disparos" [ref=e54] [cursor=pointer]:
+                - /url: /broadcasts
+                - img [ref=e55]
+                - generic [ref=e58]: Disparos
+            - listitem [ref=e59]:
+              - link "Follow-ups" [ref=e60] [cursor=pointer]:
+                - /url: /followups
+                - img [ref=e61]
+                - generic [ref=e64]: Follow-ups
+            - listitem [ref=e65]:
+              - link "Imóveis" [ref=e66] [cursor=pointer]:
+                - /url: /products
+                - img [ref=e67]
+                - generic [ref=e70]: Imóveis
+            - listitem [ref=e71]:
+              - link "Corretores" [ref=e72] [cursor=pointer]:
+                - /url: /agents
+                - img [ref=e73]
+                - generic [ref=e77]: Corretores
+        - generic [ref=e78]:
+          - paragraph [ref=e79]: Sistema
+          - list [ref=e80]:
+            - listitem [ref=e81]:
+              - link "Configurações" [ref=e82] [cursor=pointer]:
+                - /url: /settings
+                - img [ref=e83]
+                - generic [ref=e86]: Configurações
+      - generic [ref=e88]:
+        - paragraph [ref=e89]: Evolution API
+        - generic [ref=e90]: Online
+    - generic [ref=e92]:
+      - banner [ref=e93]:
+        - button "Toggle Sidebar" [ref=e94]:
+          - img [ref=e95]
+        - generic [ref=e98]:
+          - img [ref=e99]
+          - textbox "Buscar leads, contatos, imóveis..." [ref=e102]
+        - button "Notificações" [ref=e103]:
+          - img [ref=e104]
+          - generic [ref=e107]: "3"
+        - link "U Usuário Corretor" [ref=e108] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e109]: U
+          - generic [ref=e110]:
+            - generic [ref=e111]: Usuário
+            - generic [ref=e112]: Corretor
+        - button "Sair" [ref=e113]:
+          - img [ref=e114]
+      - main [ref=e117]:
+        - generic [ref=e119]: Loading profile...
+  - alert [ref=e120]

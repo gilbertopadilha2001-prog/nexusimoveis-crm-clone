@@ -53,8 +53,16 @@ export async function POST(req: NextRequest) {
       for (const msg of data.messages) {
         if (msg.key?.fromMe) continue;
 
-        const phone = msg.key?.remoteJid?.replace("@s.whatsapp.net", "");
-        if (phone?.includes("@g.us")) continue; // ignora grupos
+        const rawJid = msg.key?.remoteJid ?? "";
+        if (rawJid.includes("@g.us")) continue; // ignora grupos
+
+        // Handle @lid format — use remoteJidAlt for the actual phone
+        const phoneRaw = rawJid.includes("@lid")
+          ? (msg.key?.remoteJidAlt ?? "").replace("@s.whatsapp.net", "")
+          : rawJid.replace("@s.whatsapp.net", "");
+
+        const phone = phoneRaw.replace(/\D/g, "");
+        if (!phone || phone.length < 8) continue;
 
         const text =
           msg.message?.conversation ||
@@ -63,7 +71,7 @@ export async function POST(req: NextRequest) {
           null;
         const pushName = msg.pushName;
 
-        if (!phone || !text) continue;
+        if (!text) continue;
 
         const existing = await prisma.conversation.findUnique({ where: { phone } });
 
@@ -72,6 +80,7 @@ export async function POST(req: NextRequest) {
           conversation = await prisma.conversation.create({
             data: {
               phone,
+              remoteJid: rawJid,
               name: pushName || phone,
               lastMessage: text,
               lastAt: new Date(),
@@ -87,7 +96,6 @@ export async function POST(req: NextRequest) {
               lastMessage: text,
               lastAt: new Date(),
               unread: { increment: 1 },
-              // Associa ao agente se ainda não estava vinculado
               ...(agentByInstance && !existing.agentId ? { agentId: agentByInstance.id } : {}),
             },
           });

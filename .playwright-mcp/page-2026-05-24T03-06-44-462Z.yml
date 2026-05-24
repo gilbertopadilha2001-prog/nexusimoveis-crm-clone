@@ -1,0 +1,24 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - img "Nexus Imóveis" [ref=e6]
+      - heading "Dashboard Nexus" [level=1] [ref=e7]
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - heading "Entrar no CRM" [level=2] [ref=e10]
+        - paragraph [ref=e11]: Acesse com suas credenciais
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: Nome
+          - textbox "Seu nome de usuário" [ref=e15]
+        - generic [ref=e16]:
+          - generic [ref=e17]: Senha
+          - generic [ref=e18]:
+            - textbox "Digite sua senha" [ref=e19]
+            - button [ref=e20]:
+              - img [ref=e21]
+        - button "Entrar" [ref=e24]:
+          - img [ref=e25]
+          - text: Entrar
+    - paragraph [ref=e28]: Nexus Inovações Imobiliárias © 2026
+  - alert [ref=e29]

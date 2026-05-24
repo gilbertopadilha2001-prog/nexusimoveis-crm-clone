@@ -178,6 +178,7 @@ model Visit {
 model Conversation {
   id          String    @id @default(cuid())
   phone       String    @unique
+  remoteJid   String?
   name        String?
   unread      Int       @default(0)
   lastMessage String?
