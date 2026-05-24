@@ -61,6 +61,38 @@ export async function POST(req: NextRequest) {
 
   const hashedPassword = await hash(password, 12);
 
+  const instanceName = username.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const webhookUrl = `${process.env.AUTH_URL || "https://crm.nexusinovacoesimobiliarias.com.br"}/api/evolution/webhook`;
+  const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || "";
+  const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || "";
+
+  // Cria instância na Evolution API antes de salvar o usuário
+  let evolutionCreated = false;
+  if (EVOLUTION_API_URL) {
+    await fetch(`${EVOLUTION_API_URL}/instance/delete/${instanceName}`, {
+      method: "DELETE",
+      headers: { apikey: EVOLUTION_API_KEY },
+    }).catch(() => {});
+
+    const evRes = await fetch(`${EVOLUTION_API_URL}/instance/create`, {
+      method: "POST",
+      headers: { apikey: EVOLUTION_API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        instanceName,
+        qrcode: true,
+        integration: "WHATSAPP-BAILEYS",
+        webhook: {
+          url: webhookUrl,
+          enabled: true,
+          byEvents: true,
+          base64: false,
+          events: ["MESSAGES_UPSERT", "CONNECTION_UPDATE", "QRCODE_UPDATED"],
+        },
+      }),
+    }).catch(() => null);
+    evolutionCreated = evRes?.ok ?? false;
+  }
+
   const user = await prisma.user.create({
     data: {
       name,
@@ -76,6 +108,8 @@ export async function POST(req: NextRequest) {
         .join("")
         .slice(0, 2)
         .toUpperCase(),
+      whatsappInstanceId: evolutionCreated ? instanceName : undefined,
+      whatsappStatus: "disconnected",
     },
     select: {
       id: true,
@@ -86,6 +120,7 @@ export async function POST(req: NextRequest) {
       creci: true,
       active: true,
       avatar: true,
+      whatsappInstanceId: true,
     },
   });
 

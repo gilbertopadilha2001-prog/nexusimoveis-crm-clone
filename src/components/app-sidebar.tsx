@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   MessageSquare,
@@ -39,8 +40,28 @@ interface AppSidebarProps {
   isCollapsed: boolean;
 }
 
+interface WhatsAppStatus {
+  status: "connected" | "disconnected" | "scanning";
+  phone: string | null;
+  instanceName: string | null;
+  userName: string | null;
+}
+
 export function AppSidebar({ isCollapsed }: AppSidebarProps) {
   const pathname = usePathname();
+  const [wa, setWa] = useState<WhatsAppStatus | null>(null);
+
+  useEffect(() => {
+    const fetchStatus = () => {
+      fetch("/api/evolution/status")
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => d && setWa(d))
+        .catch(() => {});
+    };
+    fetchStatus();
+    const id = setInterval(fetchStatus, 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   return (
     <aside
@@ -105,20 +126,52 @@ export function AppSidebar({ isCollapsed }: AppSidebarProps) {
       {/* Footer status */}
       {!isCollapsed && (
         <div className="p-2">
-          <div className="rounded-lg p-3" style={{ backgroundColor: "hsl(220, 20%, 16%)" }}>
-            <p className="text-xs mb-1.5" style={{ color: "hsl(40, 10%, 65%)" }}>
+          <div className="rounded-lg p-3 space-y-2" style={{ backgroundColor: "hsl(220, 20%, 16%)" }}>
+            <p className="text-xs font-semibold" style={{ color: "hsl(40, 10%, 65%)" }}>
               Evolution API
             </p>
-            <span
-              className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
-              style={{
-                backgroundColor: "rgba(34, 197, 94, 0.15)",
-                color: "rgb(74, 222, 128)",
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
-              Online
-            </span>
+            {wa ? (
+              <>
+                <div className="flex items-center gap-1.5">
+                  {wa.status === "connected" ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: "rgba(34, 197, 94, 0.15)", color: "rgb(74, 222, 128)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
+                      Conectado
+                    </span>
+                  ) : wa.status === "scanning" ? (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: "rgba(245, 158, 11, 0.15)", color: "rgb(251, 191, 36)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block animate-pulse" />
+                      Aguardando QR
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", color: "rgb(252, 129, 129)" }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-400 inline-block" />
+                      Desconectado
+                    </span>
+                  )}
+                </div>
+                {wa.userName && (
+                  <p className="text-[11px] truncate" style={{ color: "hsl(40, 10%, 80%)" }}>
+                    {wa.userName}
+                  </p>
+                )}
+                {wa.instanceName && (
+                  <p className="text-[10px] font-mono truncate" style={{ color: "hsl(40, 10%, 50%)" }}>
+                    #{wa.instanceName}
+                    {wa.phone ? ` · ${wa.phone}` : ""}
+                  </p>
+                )}
+              </>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
+                style={{ backgroundColor: "rgba(34, 197, 94, 0.15)", color: "rgb(74, 222, 128)" }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
+                Online
+              </span>
+            )}
           </div>
         </div>
       )}

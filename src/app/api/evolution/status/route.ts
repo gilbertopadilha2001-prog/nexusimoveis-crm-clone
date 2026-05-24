@@ -16,7 +16,7 @@ export async function GET() {
     if (!user) return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
 
     if (!user.whatsappInstanceId) {
-      return NextResponse.json({ status: "disconnected", phone: null });
+      return NextResponse.json({ status: "disconnected", phone: null, instanceName: null, userName: user.name });
     }
 
     const res = await fetch(
@@ -59,7 +59,7 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json({ status, phone });
+    return NextResponse.json({ status, phone, instanceName: user.whatsappInstanceId, userName: user.name });
   } catch (error) {
     console.error("Error checking WhatsApp status:", error);
     return NextResponse.json({ error: "Erro interno" }, { status: 500 });

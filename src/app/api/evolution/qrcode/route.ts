@@ -15,7 +15,8 @@ export async function POST() {
     const user = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!user) return NextResponse.json({ error: "Usuário não encontrado" }, { status: 404 });
 
-    const instanceName = `corretor_${user.id}`;
+    // Usa username em lowercase como nome da instância (único e legível)
+    const instanceName = user.whatsappInstanceId || user.username.toLowerCase().replace(/[^a-z0-9]/g, "");
 
     if (user.whatsappStatus === "connected" && user.whatsappInstanceId) {
       return NextResponse.json({ status: "already_connected", phone: user.whatsappPhone });
