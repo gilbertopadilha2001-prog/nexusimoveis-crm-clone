@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || "http://evolution:8080";
+const EVOLUTION_API_URL = process.env.EVOLUTION_API_URL || "http://evolution_evolution_api:8080";
 const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || "";
 
 export async function POST() {
